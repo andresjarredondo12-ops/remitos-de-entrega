@@ -190,7 +190,7 @@ function render(){
   tabla.innerHTML = html;
 }
 
-// ===== CSV CON TOTALES =====
+// ===== CSV PERFECTO =====
 function generarCSV(){
   let db = getDB();
   let dia = db.find(d => d.fecha === hoy());
@@ -200,16 +200,25 @@ function generarCSV(){
     return null;
   }
 
+  let sep = ";"; // 🔥 clave para Excel en español
+
   let csv = "DETALLE\n";
-  csv += "N°,Fecha,Hora,Nombre,Apellido,Corte,Peso\n";
+  csv += ["N°","Fecha","Hora","Nombre","Apellido","Corte","Peso"].join(sep) + "\n";
 
   let totales = {};
   let totalGlobal = 0;
 
   dia.registros.forEach((r,i)=>{
-    csv += `${i+1},"${r.fecha}","${r.hora}","${r.nombre}","${r.apellido}","${r.corte}",${r.peso}\n`;
+    csv += [
+      i+1,
+      r.fecha,
+      r.hora,
+      r.nombre,
+      r.apellido,
+      r.corte,
+      r.peso
+    ].join(sep) + "\n";
 
-    // acumulador por corte
     if(!totales[r.corte]){
       totales[r.corte] = 0;
     }
@@ -218,16 +227,21 @@ function generarCSV(){
     totalGlobal += r.peso;
   });
 
+  // separación visual limpia
+  csv += "\n";
+
   // ===== RESUMEN =====
-  csv += "\n\nRESUMEN POR CORTE\n";
-  csv += "Corte,Kilos Totales\n";
+  csv += "RESUMEN POR CORTE\n";
+  csv += ["Corte","Kilos Totales"].join(sep) + "\n";
 
   for(let corte in totales){
-    csv += `"${corte}",${totales[corte]}\n`;
+    csv += [corte, totales[corte]].join(sep) + "\n";
   }
 
+  csv += "\n";
+
   // ===== TOTAL GLOBAL =====
-  csv += `\nTOTAL GLOBAL,${totalGlobal}\n`;
+  csv += ["TOTAL GLOBAL", totalGlobal].join(sep) + "\n";
 
   return csv;
 }
@@ -256,7 +270,7 @@ function prepararMail(){
 
   descargarCSV();
 
-  alert("Archivo descargado. Adjuntalo manualmente.");
+  alert("Archivo listo. Adjuntalo al mail.");
 
   let asunto = "Registro Carnes";
   let cuerpo = "Adjunto archivo del día.";
