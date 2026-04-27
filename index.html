@@ -31,8 +31,8 @@ th,td{padding:8px;border-bottom:1px solid #ddd;}
 <br>
 
 <button class="guardar" onclick="guardar()">Guardar</button>
-<button class="excel" onclick="descargarExcel()">Excel</button>
-<button class="mail" onclick="enviarMail()">Enviar Mail</button>
+<button class="excel" onclick="descargarExcel()">Descargar Excel</button>
+<button class="mail" onclick="prepararMail()">Compartir por Mail</button>
 <button class="borrar" onclick="borrar()">Borrar</button>
 </div>
 
@@ -74,7 +74,7 @@ function obtenerDia(db){
   let dia = db.find(d => d.fecha === f);
 
   if(!dia){
-    dia = {fecha:f, enviado:false, registros:[]};
+    dia = {fecha:f, registros:[]};
     db.push(dia);
   }
 
@@ -88,10 +88,10 @@ function obtenerDia(db){
 
 // ===== GUARDAR =====
 function guardar(){
-  let n = nombre.value.trim();
-  let a = apellido.value.trim();
-  let c = corte.value.trim();
-  let p = parseFloat(peso.value);
+  let n = document.getElementById("nombre").value.trim();
+  let a = document.getElementById("apellido").value.trim();
+  let c = document.getElementById("corte").value.trim();
+  let p = parseFloat(document.getElementById("peso").value);
 
   if(!n || !a || !c || isNaN(p) || p <= 0){
     alert("Completá bien los campos");
@@ -110,18 +110,18 @@ function guardar(){
     peso:p
   });
 
-  setDB(db); // 🔥 GUARDA REAL
+  setDB(db);
 
   limpiar();
   render();
 }
 
-// ===== LIMPIAR INPUTS =====
+// ===== LIMPIAR =====
 function limpiar(){
-  nombre.value="";
-  apellido.value="";
-  corte.value="";
-  peso.value="";
+  document.getElementById("nombre").value="";
+  document.getElementById("apellido").value="";
+  document.getElementById("corte").value="";
+  document.getElementById("peso").value="";
 }
 
 // ===== TABLA =====
@@ -148,7 +148,7 @@ function render(){
     html = "<tr><td colspan='7'>Sin registros</td></tr>";
   }
 
-  tabla.innerHTML = html;
+  document.getElementById("tabla").innerHTML = html;
 }
 
 // ===== EXCEL =====
@@ -177,6 +177,7 @@ function generarExcel(){
 
   return `
   <html>
+  <head><meta charset="UTF-8"></head>
   <body>
   <table border="1">
   <tr>
@@ -189,6 +190,7 @@ function generarExcel(){
   </html>`;
 }
 
+// ===== DESCARGAR =====
 function descargarExcel(){
   let html = generarExcel();
   if(!html) return;
@@ -205,36 +207,24 @@ function descargarExcel(){
 }
 
 // ===== MAIL =====
-function enviarMail(){
+function prepararMail(){
   let html = generarExcel();
   if(!html) return;
 
   descargarExcel();
 
-  let asunto = "Registro Carnes";
-  let cuerpo = "Adjunto Excel del día.";
+  alert("El archivo se descargó.\nAhora adjuntalo manualmente en tu mail.");
+
+  let asunto = "Registro Carnes del día";
+  let cuerpo = "Adjunto el Excel generado.";
 
   window.location.href =
     `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
-
-  // 🔥 limpiar automáticamente después de enviar
-  let db = getDB();
-  let f = hoy();
-
-  db = db.map(d=>{
-    if(d.fecha === f){
-      return {fecha:f, enviado:true, registros:[]};
-    }
-    return d;
-  });
-
-  setDB(db);
-  render();
 }
 
 // ===== BORRAR =====
 function borrar(){
-  if(!confirm("Borrar datos de hoy?")) return;
+  if(!confirm("¿Borrar datos de hoy?")) return;
 
   let db = getDB();
   let f = hoy();
@@ -254,6 +244,6 @@ function borrar(){
 render();
 
 </script>
+
 </body>
-</html>
 </html>
