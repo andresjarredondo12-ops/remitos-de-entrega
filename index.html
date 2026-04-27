@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Carnes</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+        table {
+            border-collapse: collapse;
+            margin-top: 20px;
+            width: 100%;
+            background: white;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Registro Diario de Carnes</h2>
+
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="text" id="apellido" placeholder="Apellido">
+<input type="text" id="corte" placeholder="Corte de carne">
+<input type="number" id="peso" placeholder="Peso (kg)">
+
+<br>
+
+<button onclick="guardar()">Guardar</button>
+<button onclick="exportarExcel()">Exportar a Excel</button>
+<button onclick="enviarMail()">Enviar por Mail</button>
+
+<table id="tabla">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Corte</th>
+            <th>Peso</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+const clave = "registrosCarnes";
+
+function obtenerDatos() {
+    return JSON.parse(localStorage.getItem(clave)) || [];
+}
+
+function guardarDatos(datos) {
+    localStorage.setItem(clave, JSON.stringify(datos));
+}
+
+function renderTabla() {
+    const datos = obtenerDatos();
+    const tbody = document.querySelector("#tabla tbody");
+    tbody.innerHTML = "";
+
+    datos.forEach(d => {
+        const fila = `<tr>
+            <td>${d.nombre}</td>
+            <td>${d.apellido}</td>
+            <td>${d.corte}</td>
+            <td>${d.peso}</td>
+        </tr>`;
+        tbody.innerHTML += fila;
+    });
+}
+
+function guardar() {
+    const nombre = document.getElementById("nombre").value;
+    const apellido = document.getElementById("apellido").value;
+    const corte = document.getElementById("corte").value;
+    const peso = document.getElementById("peso").value;
+
+    if (!nombre || !apellido || !corte || !peso) {
+        alert("Completar todos los campos");
+        return;
+    }
+
+    const datos = obtenerDatos();
+    datos.push({ nombre, apellido, corte, peso });
+    guardarDatos(datos);
+
+    renderTabla();
+
+    document.getElementById("nombre").value = "";
+    document.getElementById("apellido").value = "";
+    document.getElementById("corte").value = "";
+    document.getElementById("peso").value = "";
+}
+
+function exportarExcel() {
+    const datos = obtenerDatos();
+
+    let tabla = `
+    <table border="1">
+        <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Corte</th>
+            <th>Peso</th>
+        </tr>
+    `;
+
+    datos.forEach(d => {
+        tabla += `
+        <tr>
+            <td>${d.nombre}</td>
+            <td>${d.apellido}</td>
+            <td>${d.corte}</td>
+            <td>${d.peso}</td>
+        </tr>`;
+    });
+
+    tabla += "</table>";
+
+    const blob = new Blob([tabla], { type: "application/vnd.ms-excel" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "registros.xls";
+    a.click();
+}
+
+function enviarMail() {
+    const asunto = "Registros de Carne";
+    const cuerpo = "Adjunto archivo con registros diarios.";
+
+    window.location.href = `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+}
+
+renderTabla();
+</script>
+
+</body>
+</html>
