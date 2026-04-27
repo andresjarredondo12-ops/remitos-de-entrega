@@ -13,8 +13,11 @@ button{padding:10px;margin:5px;border:none;border-radius:5px;cursor:pointer;}
 .excel{background:#27ae60;color:#fff;}
 .mail{background:#2980b9;color:#fff;}
 .borrar{background:#888;color:#fff;}
+.fijar{background:#8e44ad;color:#fff;}
+.cambiar{background:#f39c12;color:#fff;}
 table{width:100%;border-collapse:collapse;}
 th,td{padding:8px;border-bottom:1px solid #ddd;}
+.cliente-activo{font-weight:bold;color:#2c3e50;margin-bottom:10px;}
 </style>
 
 </head>
@@ -23,17 +26,26 @@ th,td{padding:8px;border-bottom:1px solid #ddd;}
 <h2>Registro Diario de Carnes</h2>
 
 <div class="box">
+
+<div id="clienteActivo" class="cliente-activo">Cliente: Ninguno</div>
+
 <input id="nombre" placeholder="Nombre">
 <input id="apellido" placeholder="Apellido">
+<button class="fijar" onclick="fijarCliente()">Fijar Cliente</button>
+<button class="cambiar" onclick="cambiarCliente()">Cambiar</button>
+
+<br><br>
+
 <input id="corte" placeholder="Corte">
 <input id="peso" type="number" placeholder="Peso">
 
 <br>
 
-<button class="guardar" onclick="guardar()">Guardar</button>
+<button class="guardar" onclick="guardar()">Guardar Corte</button>
 <button class="excel" onclick="descargarCSV()">Descargar Excel</button>
 <button class="mail" onclick="prepararMail()">Compartir por Mail</button>
 <button class="borrar" onclick="borrar()">Borrar</button>
+
 </div>
 
 <div class="box">
@@ -49,6 +61,9 @@ th,td{padding:8px;border-bottom:1px solid #ddd;}
 </div>
 
 <script>
+
+// ===== CLIENTE ACTIVO =====
+let clienteActual = null;
 
 // ===== UTIL =====
 function hoy(){
@@ -66,6 +81,39 @@ function getDB(){
 
 function setDB(db){
   localStorage.setItem("carnes_db", JSON.stringify(db));
+}
+
+// ===== FIJAR CLIENTE =====
+function fijarCliente(){
+  let n = nombre.value.trim();
+  let a = apellido.value.trim();
+
+  if(!n || !a){
+    alert("Ingresá nombre y apellido");
+    return;
+  }
+
+  clienteActual = {nombre:n, apellido:a};
+
+  document.getElementById("clienteActivo").innerText =
+    `Cliente: ${n} ${a}`;
+
+  nombre.disabled = true;
+  apellido.disabled = true;
+}
+
+// ===== CAMBIAR CLIENTE =====
+function cambiarCliente(){
+  clienteActual = null;
+
+  nombre.disabled = false;
+  apellido.disabled = false;
+
+  nombre.value = "";
+  apellido.value = "";
+
+  document.getElementById("clienteActivo").innerText =
+    "Cliente: Ninguno";
 }
 
 // ===== DIA =====
@@ -87,13 +135,17 @@ function obtenerDia(db){
 
 // ===== GUARDAR =====
 function guardar(){
-  let n = nombre.value.trim();
-  let a = apellido.value.trim();
+
+  if(!clienteActual){
+    alert("Primero fijá un cliente");
+    return;
+  }
+
   let c = corte.value.trim();
   let p = parseFloat(peso.value);
 
-  if(!n || !a || !c || isNaN(p) || p <= 0){
-    alert("Completá bien los campos");
+  if(!c || isNaN(p) || p <= 0){
+    alert("Completá corte y peso");
     return;
   }
 
@@ -103,24 +155,18 @@ function guardar(){
   dia.registros.push({
     fecha:hoy(),
     hora:hora(),
-    nombre:n,
-    apellido:a,
+    nombre:clienteActual.nombre,
+    apellido:clienteActual.apellido,
     corte:c,
     peso:p
   });
 
   setDB(db);
 
-  limpiar();
-  render();
-}
-
-// ===== LIMPIAR =====
-function limpiar(){
-  nombre.value="";
-  apellido.value="";
   corte.value="";
   peso.value="";
+
+  render();
 }
 
 // ===== RENDER =====
@@ -149,7 +195,7 @@ function render(){
   tabla.innerHTML = html;
 }
 
-// ===== CSV REAL =====
+// ===== CSV =====
 function generarCSV(){
   let db = getDB();
   let dia = db.find(d => d.fecha === hoy());
@@ -192,10 +238,10 @@ function prepararMail(){
 
   descargarCSV();
 
-  alert("El archivo se descargó.\nAdjuntalo manualmente en tu mail.");
+  alert("Archivo descargado. Adjuntalo manualmente.");
 
   let asunto = "Registro Carnes";
-  let cuerpo = "Adjunto archivo CSV del día.";
+  let cuerpo = "Adjunto archivo del día.";
 
   window.location.href =
     `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
