@@ -6,587 +6,401 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Carnes</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+  }
+  h2 { color: #c0392b; margin-bottom: 6px; }
+  .subtitulo { color: #888; font-size: 13px; margin-bottom: 20px; }
 
-:root {
-–rojo:      #c0392b;
-–rojo-dark: #962d22;
-–bg:        #141414;
-–surface:   #1e1e1e;
-–surface2:  #272727;
-–border:    #333;
-–text:      #e8e8e8;
-–muted:     #666;
-–blue:      #2980b9;
-–green:     #27ae60;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-font-family: ‘IBM Plex Sans’, sans-serif;
-background: var(–bg);
-color: var(–text);
-min-height: 100vh;
-padding: 28px 20px 80px;
-max-width: 980px;
-margin: 0 auto;
-}
-
-header {
-display: flex;
-align-items: flex-end;
-justify-content: space-between;
-margin-bottom: 24px;
-padding-bottom: 18px;
-border-bottom: 1px solid var(–border);
-flex-wrap: wrap;
-gap: 12px;
-}
-.header-left { border-left: 4px solid var(–rojo); padding-left: 14px; }
-.header-left h1 {
-font-family: ‘Bebas Neue’, sans-serif;
-font-size: 2.8rem;
-letter-spacing: 3px;
-line-height: 1;
-}
-.header-left p { color: var(–muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
-
-#reloj { font-size: 0.82rem; color: var(–muted); text-align: right; line-height: 1.7; }
-#reloj .hora { color: var(–text); font-weight: 500; font-size: 1rem; }
-
-/* DB status */
-#db-status {
-display: flex; align-items: center; gap: 7px;
-font-size: 0.7rem; color: var(–muted);
-margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px;
-}
-#db-dot {
-width: 8px; height: 8px; border-radius: 50%;
-background: var(–green); flex-shrink: 0;
-box-shadow: 0 0 6px var(–green);
-}
-#db-dot.error { background: var(–rojo); box-shadow: 0 0 6px var(–rojo); }
-
-/* Card formulario */
-.card {
-background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 6px;
-padding: 22px;
+.form-box {
+background: white;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 margin-bottom: 20px;
 }
-.form-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-gap: 14px;
-margin-bottom: 18px;
+.fila {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin-bottom: 14px;
+}
+.campo {
+display: flex;
+flex-direction: column;
+flex: 1;
+min-width: 150px;
 }
 .campo label {
-display: block;
-font-size: 0.67rem;
+font-size: 12px;
+font-weight: bold;
+color: #555;
+margin-bottom: 4px;
 text-transform: uppercase;
-letter-spacing: 1.5px;
-color: var(–muted);
-margin-bottom: 6px;
 }
 .campo input {
-width: 100%;
-padding: 10px 13px;
-background: var(–bg);
-border: 1px solid var(–border);
-border-radius: 4px;
-color: var(–text);
-font-family: ‘IBM Plex Sans’, sans-serif;
-font-size: 0.95rem;
+padding: 9px 11px;
+border: 1px solid #ccc;
+border-radius: 5px;
+font-size: 15px;
 outline: none;
-transition: border-color 0.2s, box-shadow 0.2s;
+transition: border-color 0.2s;
 }
-.campo input:focus {
-border-color: var(–rojo);
-box-shadow: 0 0 0 3px rgba(192,57,43,0.15);
-}
-.campo input::placeholder { color: #3a3a3a; }
+.campo input:focus { border-color: #c0392b; }
 
-.botones { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.botones { display: flex; flex-wrap: wrap; gap: 10px; }
 
 button {
-font-family: ‘IBM Plex Sans’, sans-serif;
-font-weight: 600;
-font-size: 0.73rem;
-text-transform: uppercase;
-letter-spacing: 1.5px;
 padding: 10px 18px;
+font-size: 13px;
+font-weight: bold;
 border: none;
-border-radius: 4px;
+border-radius: 5px;
 cursor: pointer;
-transition: all 0.15s;
-white-space: nowrap;
+transition: background 0.15s;
 }
-.btn-guardar { background: var(–rojo); color: #fff; }
-.btn-guardar:hover  { background: var(–rojo-dark); }
-.btn-guardar:active { transform: scale(0.97); }
+.btn-guardar  { background: #c0392b; color: white; }
+.btn-guardar:hover { background: #962d22; }
+.btn-excel    { background: #27ae60; color: white; }
+.btn-excel:hover { background: #1e8449; }
+.btn-mail     { background: #2980b9; color: white; }
+.btn-mail:hover { background: #1f6390; }
+.btn-borrar   { background: #888; color: white; }
+.btn-borrar:hover { background: #555; }
 
-.btn-outline { background: transparent; color: var(–text); border: 1px solid var(–border); }
-.btn-outline:hover { border-color: #888; }
-
-.btn-mail:hover  { border-color: var(–blue) !important; color: #5ba8d8 !important; }
-.btn-borrar { color: var(–muted) !important; margin-left: auto; }
-.btn-borrar:hover { border-color: var(–rojo) !important; color: var(–rojo) !important; }
+/* Aviso mail */
+#aviso {
+display: none;
+background: #d6eaf8;
+border: 1px solid #2980b9;
+border-radius: 6px;
+padding: 12px 16px;
+margin-bottom: 16px;
+font-size: 13px;
+color: #1a5276;
+}
 
 /* Tabla */
-.tabla-header {
-display: flex; justify-content: space-between; align-items: center;
-background: var(–surface2);
-padding: 12px 16px;
-border: 1px solid var(–border);
-border-bottom: none;
-border-radius: 6px 6px 0 0;
-}
-.tabla-header .titulo {
-font-family: ‘Bebas Neue’, sans-serif;
-font-size: 1rem; letter-spacing: 2px;
-}
-#contador {
-font-size: 0.7rem; font-weight: 600;
-background: var(–rojo); color: #fff;
-padding: 3px 11px; border-radius: 20px; letter-spacing: 1px;
-}
-.tabla-wrap {
-border: 1px solid var(–border);
-border-radius: 0 0 6px 6px;
+.tabla-box {
+background: white;
+border-radius: 8px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 overflow: hidden;
 }
-table { width: 100%; border-collapse: collapse; background: var(–surface); }
-thead th {
-background: #191919;
-color: var(–muted);
-font-size: 0.66rem;
-text-transform: uppercase;
-letter-spacing: 1.5px;
-padding: 10px 14px;
+.tabla-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 12px 16px;
+background: #2d2d2d;
+color: white;
+font-size: 14px;
+font-weight: bold;
+}
+#badge {
+background: #c0392b;
+color: white;
+font-size: 12px;
+padding: 2px 10px;
+border-radius: 20px;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+background: #444;
+color: white;
 text-align: left;
-font-weight: 500;
-border-bottom: 1px solid var(–border);
+padding: 10px 12px;
+font-size: 12px;
+text-transform: uppercase;
 }
-tbody td {
-padding: 10px 14px;
-font-size: 0.87rem;
-color: #bbb;
-border-bottom: 1px solid #222;
-}
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(–surface2); color: var(–text); }
-.empty-cell {
-text-align: center; padding: 44px;
-color: #3a3a3a; font-size: 0.82rem;
-letter-spacing: 1px; font-style: italic;
-}
-
-/* Toast */
-#toast {
-display: none;
-position: fixed; bottom: 24px; left: 50%;
-transform: translateX(-50%);
-border-radius: 6px;
-padding: 13px 22px;
-font-size: 0.84rem;
-max-width: 500px; width: calc(100% - 40px);
-text-align: center; z-index: 9999;
-box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-animation: slideUp 0.3s ease;
-}
-@keyframes slideUp {
-from { opacity:0; transform: translateX(-50%) translateY(10px); }
-to   { opacity:1; transform: translateX(-50%) translateY(0); }
-}
+td { padding: 9px 12px; font-size: 14px; border-bottom: 1px solid #eee; color: #333; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fdf5f5; }
+#fila-vacia td { text-align: center; padding: 30px; color: #bbb; font-style: italic; }
 </style>
 
 </head>
 <body>
 
-<header>
-  <div class="header-left">
-    <h1>Registro de Carnes</h1>
-    <p>Control diario de entregas</p>
-  </div>
-  <div id="reloj">
-    <div id="fecha-txt"></div>
-    <div class="hora" id="hora-txt"></div>
-  </div>
-</header>
+<h2>Registro Diario de Carnes</h2>
+<div class="subtitulo" id="fecha-hoy"></div>
 
-<div id="db-status"><div id="db-dot"></div><span id="db-msg">Conectando a base de datos...</span></div>
-
-<div class="card">
-  <div class="form-grid">
-    <div class="campo"><label>Nombre</label>
-      <input id="nombre" placeholder="Ej: Juan" autocomplete="off"></div>
-    <div class="campo"><label>Apellido</label>
-      <input id="apellido" placeholder="Ej: García" autocomplete="off"></div>
-    <div class="campo"><label>Corte de carne</label>
-      <input id="corte" placeholder="Ej: Asado" autocomplete="off"></div>
-    <div class="campo"><label>Peso (kg)</label>
-      <input id="peso" type="number" step="0.01" min="0.01" placeholder="Ej: 2.50" autocomplete="off"></div>
+<div class="form-box">
+  <div class="fila">
+    <div class="campo">
+      <label>Nombre</label>
+      <input id="inp-nombre" placeholder="Ej: Juan">
+    </div>
+    <div class="campo">
+      <label>Apellido</label>
+      <input id="inp-apellido" placeholder="Ej: García">
+    </div>
+    <div class="campo">
+      <label>Corte de carne</label>
+      <input id="inp-corte" placeholder="Ej: Asado">
+    </div>
+    <div class="campo">
+      <label>Peso (kg)</label>
+      <input id="inp-peso" type="number" step="0.01" min="0.01" placeholder="Ej: 2.50">
+    </div>
   </div>
   <div class="botones">
-    <button class="btn-guardar" onclick="guardar()">+ Guardar</button>
-    <button class="btn-outline" onclick="exportarExcel()">⬇ Descargar Excel</button>
-    <button class="btn-outline btn-mail" onclick="enviarMail()">✉ Enviar por Mail</button>
-    <button class="btn-outline btn-borrar" onclick="borrarTodo()">✕ Borrar registros de hoy</button>
+    <button class="btn-guardar" onclick="guardar()">✔ GUARDAR</button>
+    <button class="btn-excel"   onclick="descargarExcel()">⬇ DESCARGAR EXCEL</button>
+    <button class="btn-mail"    onclick="enviarMail()">✉ ENVIAR POR MAIL</button>
+    <button class="btn-borrar"  onclick="borrar()">✕ BORRAR HOY</button>
   </div>
 </div>
 
-<div class="tabla-header">
-  <span class="titulo">Registros del día</span>
-  <span id="contador">0 registros</span>
+<div id="aviso">
+  <strong>📎 Paso requerido:</strong> El archivo Excel se descargó automáticamente.
+  Tu cliente de correo va a abrirse — adjuntá el archivo descargado antes de enviar.
 </div>
-<div class="tabla-wrap">
+
+<div class="tabla-box">
+  <div class="tabla-top">
+    <span>Registros del día</span>
+    <span id="badge">0</span>
+  </div>
   <table>
     <thead>
       <tr>
-        <th>#</th><th>Fecha</th><th>Hora</th>
-        <th>Nombre</th><th>Apellido</th><th>Corte</th><th>Peso (kg)</th>
+        <th>#</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Corte</th>
+        <th>Peso (kg)</th>
       </tr>
     </thead>
-    <tbody id="tabla">
-      <tr><td colspan="7" class="empty-cell">Iniciando...</td></tr>
-    </tbody>
+    <tbody id="cuerpo-tabla"></tbody>
   </table>
 </div>
 
-<div id="toast"></div>
-
 <script>
-// ═══════════════════════════════════════════
-//  INDEXEDDB — BASE DE DATOS REAL
-// ═══════════════════════════════════════════
-const DB_NAME    = 'RegistroCarnesDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'registros';
-let db = null;
 
-function initDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-
-    req.onupgradeneeded = function(e) {
-      const database = e.target.result;
-      if (!database.objectStoreNames.contains(STORE_NAME)) {
-        const store = database.createObjectStore(STORE_NAME, {
-          keyPath: 'id',
-          autoIncrement: true
-        });
-        // Índice para filtrar por fecha local (YYYY-MM-DD)
-        store.createIndex('idx_fecha', 'fecha_local', { unique: false });
-      }
-    };
-
-    req.onsuccess = function(e) {
-      db = e.target.result;
-      resolve();
-    };
-
-    req.onerror = function(e) {
-      reject(e.target.error);
-    };
-  });
+// ── Clave única por día en localStorage ──────────────────────
+function claveHoy() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var dia = String(d.getDate()).padStart(2, '0');
+  return 'carnes_' + y + '_' + m + '_' + dia;
 }
 
-function dbAgregar(obj) {
-  return new Promise((resolve, reject) => {
-    const tx  = db.transaction(STORE_NAME, 'readwrite');
-    const req = tx.objectStore(STORE_NAME).add(obj);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror   = () => reject(req.error);
-  });
+// ── Leer y escribir en localStorage ──────────────────────────
+function leerDatos() {
+  try {
+    var raw = localStorage.getItem(claveHoy());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) {
+    return [];
+  }
 }
 
-function dbObtenerHoy() {
-  return new Promise((resolve, reject) => {
-    const clave = fechaLocalISO();
-    const tx    = db.transaction(STORE_NAME, 'readonly');
-    const store = tx.objectStore(STORE_NAME);
-    const idx   = store.index('idx_fecha');
-    const req   = idx.getAll(clave);
-    req.onsuccess = () => resolve(req.result);
-    req.onerror   = () => reject(req.error);
-  });
+function escribirDatos(lista) {
+  localStorage.setItem(claveHoy(), JSON.stringify(lista));
 }
 
-function dbBorrarHoy() {
-  return new Promise((resolve, reject) => {
-    const clave = fechaLocalISO();
-    const tx    = db.transaction(STORE_NAME, 'readwrite');
-    const idx   = tx.objectStore(STORE_NAME).index('idx_fecha');
-    const req   = idx.openCursor(IDBKeyRange.only(clave));
-
-    req.onsuccess = function(e) {
-      const cursor = e.target.result;
-      if (cursor) { cursor.delete(); cursor.continue(); }
-    };
-
-    tx.oncomplete = () => resolve();
-    tx.onerror    = () => reject(tx.error);
-  });
-}
-
-// ═══════════════════════════════════════════
-//  FECHA Y HORA DEL DISPOSITIVO
-// ═══════════════════════════════════════════
-function fechaLocalISO() {
-  // YYYY-MM-DD en zona horaria LOCAL del dispositivo (no UTC)
-  const d = new Date();
-  const yy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yy}-${mm}-${dd}`;
-}
-
-function fmtFecha(d) {
+// ── Fecha y hora del dispositivo ─────────────────────────────
+function obtenerFecha() {
+  var d = new Date();
   return d.toLocaleDateString('es-AR', {
     day: '2-digit', month: '2-digit', year: 'numeric'
   });
 }
 
-function fmtHora(d) {
+function obtenerHora() {
+  var d = new Date();
   return d.toLocaleTimeString('es-AR', {
     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
   });
 }
 
-// Reloj en tiempo real
-function tickReloj() {
-  const ahora = new Date();
-  document.getElementById('fecha-txt').textContent =
-    ahora.toLocaleDateString('es-AR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-  document.getElementById('hora-txt').textContent = fmtHora(ahora);
-}
-tickReloj();
-setInterval(tickReloj, 1000);
+// ── Mostrar fecha de hoy en el encabezado ────────────────────
+document.getElementById('fecha-hoy').textContent =
+  new Date().toLocaleDateString('es-AR', {
+    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+  });
 
-// ═══════════════════════════════════════════
-//  GUARDAR
-// ═══════════════════════════════════════════
-async function guardar() {
-  const nombre   = document.getElementById('nombre').value.trim();
-  const apellido = document.getElementById('apellido').value.trim();
-  const corte    = document.getElementById('corte').value.trim();
-  const pesoStr  = document.getElementById('peso').value.trim();
+// ── GUARDAR ───────────────────────────────────────────────────
+function guardar() {
+  var nombre   = document.getElementById('inp-nombre').value.trim();
+  var apellido = document.getElementById('inp-apellido').value.trim();
+  var corte    = document.getElementById('inp-corte').value.trim();
+  var peso     = document.getElementById('inp-peso').value.trim();
 
-  if (!nombre || !apellido || !corte || !pesoStr) {
-    toast('⚠ Completá todos los campos antes de guardar.', '#3d1f1f', '#e07070');
+  if (!nombre || !apellido || !corte || !peso) {
+    alert('Completá todos los campos antes de guardar.');
     return;
   }
 
-  const peso = parseFloat(pesoStr);
-  if (isNaN(peso) || peso <= 0) {
-    toast('⚠ Ingresá un peso válido mayor a 0.', '#3d1f1f', '#e07070');
+  if (isNaN(parseFloat(peso)) || parseFloat(peso) <= 0) {
+    alert('El peso debe ser un número mayor a 0.');
     return;
   }
 
-  // Captura exacta del momento en el dispositivo
-  const ahora = new Date();
-
-  const registro = {
-    // Para indexar y filtrar
-    fecha_local: fechaLocalISO(),
-    // Para mostrar y exportar
-    fecha:       fmtFecha(ahora),
-    hora:        fmtHora(ahora),
-    // Timestamp completo (útil para auditoría)
-    timestamp:   ahora.toISOString(),
-    // Datos del formulario
-    nombre, apellido, corte,
-    peso
+  var registro = {
+    fecha:    obtenerFecha(),   // fecha del dispositivo
+    hora:     obtenerHora(),    // hora del dispositivo
+    nombre:   nombre,
+    apellido: apellido,
+    corte:    corte,
+    peso:     parseFloat(peso)
   };
 
-  try {
-    await dbAgregar(registro);
-    ['nombre','apellido','corte','peso'].forEach(id => {
-      document.getElementById(id).value = '';
-    });
-    document.getElementById('nombre').focus();
-    await renderTabla();
-    toast('✔ Registro guardado correctamente.', '#1a3520', '#6dbf7e');
-  } catch(err) {
-    console.error('Error guardando:', err);
-    toast('❌ Error al guardar. Intentá de nuevo.', '#3d1f1f', '#e07070');
+  var datos = leerDatos();
+  datos.push(registro);
+  escribirDatos(datos);
+
+  // Limpiar campos
+  document.getElementById('inp-nombre').value   = '';
+  document.getElementById('inp-apellido').value = '';
+  document.getElementById('inp-corte').value    = '';
+  document.getElementById('inp-peso').value     = '';
+  document.getElementById('inp-nombre').focus();
+
+  renderTabla();
+}
+
+// ── RENDER TABLA ──────────────────────────────────────────────
+function renderTabla() {
+  var datos  = leerDatos();
+  var cuerpo = document.getElementById('cuerpo-tabla');
+  var badge  = document.getElementById('badge');
+
+  badge.textContent = datos.length + ' registro' + (datos.length !== 1 ? 's' : '');
+  cuerpo.innerHTML  = '';
+
+  if (datos.length === 0) {
+    cuerpo.innerHTML =
+      '<tr id="fila-vacia"><td colspan="7">Sin registros hoy. Ingresá el primero arriba.</td></tr>';
+    return;
   }
+
+  datos.forEach(function(d, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td style="color:#aaa;font-size:12px">' + (i + 1) + '</td>' +
+      '<td>' + d.fecha    + '</td>' +
+      '<td>' + d.hora     + '</td>' +
+      '<td>' + d.nombre   + '</td>' +
+      '<td>' + d.apellido + '</td>' +
+      '<td>' + d.corte    + '</td>' +
+      '<td>' + d.peso + ' kg</td>';
+    cuerpo.appendChild(tr);
+  });
 }
 
-// ═══════════════════════════════════════════
-//  RENDER TABLA
-// ═══════════════════════════════════════════
-async function renderTabla() {
-  const tbody    = document.getElementById('tabla');
-  const contador = document.getElementById('contador');
+// ── GENERAR EXCEL ─────────────────────────────────────────────
+function generarExcel() {
+  var datos = leerDatos();
+  if (datos.length === 0) { alert('No hay registros para exportar.'); return null; }
 
-  try {
-    const datos = await dbObtenerHoy();
-    const n = datos.length;
-    contador.textContent = `${n} registro${n !== 1 ? 's' : ''}`;
+  var filas = '';
+  datos.forEach(function(d, i) {
+    filas +=
+      '<tr>' +
+      '<td>' + (i+1)      + '</td>' +
+      '<td>' + d.fecha    + '</td>' +
+      '<td>' + d.hora     + '</td>' +
+      '<td>' + d.nombre   + '</td>' +
+      '<td>' + d.apellido + '</td>' +
+      '<td>' + d.corte    + '</td>' +
+      '<td>' + d.peso     + '</td>' +
+      '</tr>';
+  });
 
-    if (n === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" class="empty-cell">Sin registros hoy. Ingresá el primero.</td></tr>`;
-      return;
-    }
+  var html =
+    '<html><head><meta charset="UTF-8">' +
+    '<style>' +
+    'body{font-family:Arial;font-size:11pt}' +
+    'h2{color:#c0392b}' +
+    'table{border-collapse:collapse;width:100%}' +
+    'th{background:#c0392b;color:white;padding:8px 10px;border:1px solid #999;text-align:left}' +
+    'td{padding:6px 10px;border:1px solid #ccc}' +
+    'tr:nth-child(even) td{background:#f9f9f9}' +
+    '</style></head><body>' +
 
-    tbody.innerHTML = datos.map((d, i) => `
-      <tr>
-        <td style="color:var(--muted);font-size:.78rem">${i + 1}</td>
-        <td>${d.fecha}</td>
-        <td>${d.hora}</td>
-        <td>${d.nombre}</td>
-        <td>${d.apellido}</td>
-        <td>${d.corte}</td>
-        <td>${d.peso} kg</td>
-      </tr>
-    `).join('');
-  } catch(err) {
-    console.error('Error leyendo registros:', err);
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-cell">Error al cargar los registros.</td></tr>`;
-  }
+```
+'<h2>Registro de Carnes &mdash; ' + obtenerFecha() + '</h2>' +
+'<table><thead><tr>' +
+'<th>#</th><th>Fecha</th><th>Hora</th>' +
+'<th>Nombre</th><th>Apellido</th><th>Corte</th><th>Peso (kg)</th>' +
+'</tr></thead><tbody>' + filas + '</tbody></table>' +
+'</body></html>';
+```
+
+return { html: html, cantidad: datos.length };
 }
 
-// ═══════════════════════════════════════════
-//  EXCEL
-// ═══════════════════════════════════════════
-async function construirExcel() {
-  const datos = await dbObtenerHoy();
-  if (!datos.length) return null;
-
-  const filas = datos.map((d, i) => `
-    <tr>
-      <td>${i+1}</td><td>${d.fecha}</td><td>${d.hora}</td>
-      <td>${d.nombre}</td><td>${d.apellido}</td>
-      <td>${d.corte}</td><td>${d.peso}</td>
-    </tr>`).join('');
-
-  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
-    xmlns:x="urn:schemas-microsoft-com:office:excel"
-    xmlns="http://www.w3.org/TR/REC-html40">
-  <head><meta charset="UTF-8">
-  <style>
-    body{font-family:Arial,sans-serif;font-size:11pt}
-    h2{color:#c0392b;margin-bottom:10px}
-    table{border-collapse:collapse;width:100%}
-    th{background:#c0392b;color:#fff;padding:8px 12px;border:1px solid #999;font-weight:bold}
-    td{padding:6px 12px;border:1px solid #ccc}
-    tr:nth-child(even) td{background:#f5f5f5}
-  </style></head>
-
-  <body>
-    <h2>Registro de Carnes &mdash; ${new Date().toLocaleDateString('es-AR')}</h2>
-    <table>
-      <thead><tr>
-        <th>#</th><th>Fecha</th><th>Hora</th>
-        <th>Nombre</th><th>Apellido</th><th>Corte</th><th>Peso (kg)</th>
-      </tr></thead>
-      <tbody>${filas}</tbody>
-    </table>
-  </body></html>`;
-
-return { html, cantidad: datos.length };
-}
-
-function disparaDescarga(html, nombre) {
-const blob = new Blob([html], { type: ‘application/vnd.ms-excel;charset=utf-8;’ });
-const url  = URL.createObjectURL(blob);
-const a    = Object.assign(document.createElement(‘a’), { href: url, download: nombre });
+function disparaDescarga(html) {
+var blob = new Blob([html], { type: ‘application/vnd.ms-excel;charset=utf-8;’ });
+var url  = URL.createObjectURL(blob);
+var a    = document.createElement(‘a’);
+a.href     = url;
+a.download = ‘registro_carnes_’ + claveHoy().replace(‘carnes_’, ‘’) + ‘.xls’;
 document.body.appendChild(a);
 a.click();
 document.body.removeChild(a);
-setTimeout(() => URL.revokeObjectURL(url), 5000);
+setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
 }
 
-async function exportarExcel() {
-const r = await construirExcel();
-if (!r) { toast(‘⚠ No hay registros para exportar.’, ‘#3d2a1a’, ‘#e09a50’); return; }
-disparaDescarga(r.html, `registro_carnes_${fechaLocalISO()}.xls`);
-toast(`✔ Excel descargado — ${r.cantidad} registro(s).`, ‘#1a3520’, ‘#6dbf7e’);
+// ── DESCARGAR EXCEL ───────────────────────────────────────────
+function descargarExcel() {
+var r = generarExcel();
+if (!r) return;
+disparaDescarga(r.html);
 }
 
-// ═══════════════════════════════════════════
-//  ENVIAR POR MAIL
-// ═══════════════════════════════════════════
-async function enviarMail() {
-const r = await construirExcel();
-if (!r) { toast(‘⚠ No hay registros para enviar.’, ‘#3d2a1a’, ‘#e09a50’); return; }
+// ── ENVIAR POR MAIL ───────────────────────────────────────────
+function enviarMail() {
+var r = generarExcel();
+if (!r) return;
 
-// 1. Descargar Excel automáticamente
-disparaDescarga(r.html, `registro_carnes_${fechaLocalISO()}.xls`);
+// 1. Descargar Excel primero
+disparaDescarga(r.html);
 
-// 2. Aviso al usuario
-toast(
-‘📎 <b>Excel descargado.</b> Tu cliente de correo se abrirá ahora. Adjuntá el archivo antes de enviar.’,
-‘#192840’, ‘#7ab8f5’, 12000
-);
+// 2. Mostrar aviso
+var aviso = document.getElementById(‘aviso’);
+aviso.style.display = ‘block’;
+setTimeout(function() { aviso.style.display = ‘none’; }, 12000);
 
 // 3. Abrir cliente de correo
-const fecha  = new Date().toLocaleDateString(‘es-AR’);
-const asunto = `Entregas de carne — ${fecha}`;
-const cuerpo =
-`Buen día,\n\nSe adjunta el archivo Excel con los registros de carne del día ${fecha}.\nTotal: ${r.cantidad} registro(s).\n\nSaludos.`;
+var fecha  = obtenerFecha();
+var asunto = ’Entregas de carne - ’ + fecha;
+var cuerpo =
+‘Buen dia,\n\n’ +
+’Se adjunta el archivo Excel con los registros del dia ’ + fecha + ‘.\n’ +
+’Total de registros: ’ + r.cantidad + ‘\n\n’ +
+‘Saludos.’;
 
-setTimeout(() => {
-window.location.href = `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
-}, 700);
+setTimeout(function() {
+window.location.href =
+‘mailto:?subject=’ + encodeURIComponent(asunto) +
+‘&body=’           + encodeURIComponent(cuerpo);
+}, 600);
 }
 
-// ═══════════════════════════════════════════
-//  BORRAR
-// ═══════════════════════════════════════════
-async function borrarTodo() {
-if (!confirm(’¿Seguro que querés borrar TODOS los registros de hoy?\nEsta acción no se puede deshacer.’)) return;
-try {
-await dbBorrarHoy();
-await renderTabla();
-toast(‘🗑 Registros de hoy eliminados.’, ‘#3d1f1f’, ‘#e07070’);
-} catch(err) {
-console.error(err);
-toast(‘❌ Error al borrar. Intentá de nuevo.’, ‘#3d1f1f’, ‘#e07070’);
-}
+// ── BORRAR ─────────────────────────────────────────────────────
+function borrar() {
+if (!confirm(’¿Seguro que querés borrar todos los registros de HOY?\nEsta acción no se puede deshacer.’)) return;
+localStorage.removeItem(claveHoy());
+renderTabla();
 }
 
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
-let toastTmr = null;
-function toast(msg, bg, color, ms = 4500) {
-const el = document.getElementById(‘toast’);
-el.innerHTML = msg;
-Object.assign(el.style, { display:‘block’, background: bg, color, borderColor: color, border:`1px solid ${color}` });
-el.style.animation = ‘none’;
-void el.offsetWidth;
-el.style.animation = ‘slideUp .3s ease’;
-if (toastTmr) clearTimeout(toastTmr);
-toastTmr = setTimeout(() => { el.style.display = ‘none’; }, ms);
-}
-
-// ═══════════════════════════════════════════
-//  INICIO
-// ═══════════════════════════════════════════
-document.addEventListener(‘keydown’, e => {
+// ── ENTER para guardar ────────────────────────────────────────
+document.addEventListener(‘keydown’, function(e) {
 if (e.key === ‘Enter’) guardar();
 });
 
-(async function init() {
-const dot = document.getElementById(‘db-dot’);
-const msg = document.getElementById(‘db-msg’);
-try {
-await initDB();
-msg.textContent = ‘Base de datos activa (IndexedDB)’;
-await renderTabla();
-} catch(err) {
-dot.classList.add(‘error’);
-msg.textContent = ‘Error al conectar la base de datos’;
-console.error(‘IndexedDB init error:’, err);
-document.getElementById(‘tabla’).innerHTML =
-`<tr><td colspan="7" class="empty-cell">No se pudo abrir la base de datos.</td></tr>`;
-}
-})();
-</script>
+// ── INICIO ────────────────────────────────────────────────────
+renderTabla();
 
+</script>
 </body>
 </html>
