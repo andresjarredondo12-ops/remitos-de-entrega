@@ -1,210 +1,487 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Carnes</title>
-
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+–rojo: #c0392b;
+–rojo-oscuro: #96281b;
+–negro: #1a1a1a;
+–gris-oscuro: #2d2d2d;
+–gris-medio: #555;
+–gris-claro: #e8e8e8;
+–blanco: #fafafa;
+–acento: #e74c3c;
+}
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-    font-family: Arial;
-    background: #f4f4f4;
-    padding: 20px;
+font-family: ‘IBM Plex Sans’, sans-serif;
+background: var(–negro);
+color: var(–blanco);
+min-height: 100vh;
+padding: 30px 20px 60px;
 }
-input, button {
-    padding: 8px;
-    margin: 5px;
+
+header {
+border-left: 5px solid var(–rojo);
+padding-left: 16px;
+margin-bottom: 32px;
 }
+
+header h1 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 3rem;
+letter-spacing: 3px;
+color: var(–blanco);
+line-height: 1;
+}
+
+header p {
+color: var(–gris-medio);
+font-size: 0.85rem;
+margin-top: 4px;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.form-card {
+background: var(–gris-oscuro);
+border: 1px solid #3a3a3a;
+border-radius: 4px;
+padding: 24px;
+margin-bottom: 24px;
+}
+
+.form-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin-bottom: 16px;
+}
+
+.campo label {
+display: block;
+font-size: 0.7rem;
+text-transform: uppercase;
+letter-spacing: 1.5px;
+color: var(–gris-medio);
+margin-bottom: 6px;
+}
+
+.campo input {
+width: 100%;
+padding: 10px 12px;
+background: var(–negro);
+border: 1px solid #3a3a3a;
+border-radius: 3px;
+color: var(–blanco);
+font-family: ‘IBM Plex Sans’, sans-serif;
+font-size: 0.95rem;
+transition: border-color 0.2s;
+outline: none;
+}
+
+.campo input:focus {
+border-color: var(–rojo);
+}
+
+.campo input::placeholder {
+color: #555;
+}
+
+.botones {
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+
 button {
-    cursor: pointer;
+font-family: ‘IBM Plex Sans’, sans-serif;
+font-weight: 600;
+font-size: 0.8rem;
+text-transform: uppercase;
+letter-spacing: 1.5px;
+padding: 10px 20px;
+border: none;
+border-radius: 3px;
+cursor: pointer;
+transition: all 0.15s;
 }
+
+.btn-guardar {
+background: var(–rojo);
+color: white;
+}
+.btn-guardar:hover { background: var(–rojo-oscuro); }
+
+.btn-excel {
+background: transparent;
+color: var(–blanco);
+border: 1px solid #444;
+}
+.btn-excel:hover { border-color: var(–rojo); color: var(–rojo); }
+
+.btn-mail {
+background: transparent;
+color: var(–blanco);
+border: 1px solid #444;
+}
+.btn-mail:hover { border-color: #3498db; color: #3498db; }
+
+.btn-borrar {
+background: transparent;
+color: #777;
+border: 1px solid #333;
+margin-left: auto;
+}
+.btn-borrar:hover { border-color: #c0392b; color: #c0392b; }
+
+/* Aviso mail */
+#aviso-mail {
+display: none;
+background: #1a3a4a;
+border: 1px solid #3498db;
+border-radius: 4px;
+padding: 14px 18px;
+margin-bottom: 20px;
+font-size: 0.88rem;
+color: #aad4f5;
+animation: fadeIn 0.3s ease;
+}
+
+#aviso-mail strong {
+color: #fff;
+display: block;
+margin-bottom: 4px;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-6px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tabla */
+.tabla-wrap {
+border-radius: 4px;
+overflow: hidden;
+border: 1px solid #3a3a3a;
+}
+
+.tabla-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: var(–gris-oscuro);
+padding: 12px 16px;
+border-bottom: 1px solid #3a3a3a;
+}
+
+.tabla-header span {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 1.1rem;
+letter-spacing: 2px;
+color: var(–gris-claro);
+}
+
+#contador {
+font-size: 0.75rem;
+background: var(–rojo);
+color: white;
+padding: 2px 10px;
+border-radius: 20px;
+font-weight: 600;
+}
+
 table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    margin-top: 20px;
+width: 100%;
+border-collapse: collapse;
+background: #222;
 }
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-}
+
 th {
-    background: #333;
-    color: white;
+background: #1a1a1a;
+color: var(–gris-medio);
+font-size: 0.7rem;
+text-transform: uppercase;
+letter-spacing: 1.5px;
+padding: 10px 14px;
+text-align: left;
+font-weight: 500;
+border-bottom: 1px solid #3a3a3a;
+}
+
+td {
+padding: 10px 14px;
+font-size: 0.9rem;
+border-bottom: 1px solid #2a2a2a;
+color: #ccc;
+}
+
+tr:last-child td { border-bottom: none; }
+
+tr:hover td { background: #2a2a2a; color: var(–blanco); }
+
+#vacio {
+text-align: center;
+padding: 40px;
+color: #444;
+font-size: 0.85rem;
+letter-spacing: 1px;
 }
 </style>
 
 </head>
 <body>
 
-<h2>Registro Diario de Carne</h2>
+<header>
+  <h1>Registro de Carnes</h1>
+  <p>Control diario de entregas</p>
+</header>
 
-<input id="nombre" placeholder="Nombre">
-<input id="apellido" placeholder="Apellido">
-<input id="corte" placeholder="Corte de carne">
-<input id="peso" type="number" placeholder="Peso (kg)">
+<div class="form-card">
+  <div class="form-grid">
+    <div class="campo">
+      <label>Nombre</label>
+      <input id="nombre" placeholder="Ej: Juan">
+    </div>
+    <div class="campo">
+      <label>Apellido</label>
+      <input id="apellido" placeholder="Ej: García">
+    </div>
+    <div class="campo">
+      <label>Corte de carne</label>
+      <input id="corte" placeholder="Ej: Asado">
+    </div>
+    <div class="campo">
+      <label>Peso (kg)</label>
+      <input id="peso" type="number" step="0.01" placeholder="Ej: 2.5">
+    </div>
+  </div>
 
-<br>
+  <div class="botones">
+    <button class="btn-guardar" onclick="guardar()">+ Guardar registro</button>
+    <button class="btn-excel" onclick="exportarExcel()">⬇ Descargar Excel</button>
+    <button class="btn-mail" onclick="enviarMail()">✉ Enviar por Mail</button>
+    <button class="btn-borrar" onclick="borrar()">✕ Borrar todo</button>
+  </div>
+</div>
 
-<button onclick="guardar()">Guardar</button>
-<button onclick="exportarExcel()">Descargar Excel</button>
-<button onclick="enviarMail()">Enviar por Mail</button>
-<button onclick="borrar()">Borrar Registros</button>
+<!-- Aviso que aparece al presionar "Enviar por Mail" -->
 
-<table>
-<thead>
-<tr>
-<th>Fecha</th>
-<th>Hora</th>
-<th>Nombre</th>
-<th>Apellido</th>
-<th>Corte</th>
-<th>Peso</th>
-</tr>
-</thead>
-<tbody id="tabla"></tbody>
-</table>
+<div id="aviso-mail">
+  <strong>📎 Paso extra requerido</strong>
+  El archivo Excel fue descargado automáticamente a tu dispositivo. Tu cliente de correo se abrirá en un momento — <strong>adjuntá manualmente el archivo descargado</strong> antes de enviarlo.
+</div>
 
-<script>
-
-const clave = "registrosCarnes_v2";
-
-function hoyClave() {
-    const hoy = new Date();
-    return hoy.toISOString().split("T")[0]; // YYYY-MM-DD
-}
-
-function obtenerDatos() {
-    const data = JSON.parse(localStorage.getItem(clave)) || {};
-    return data[hoyClave()] || [];
-}
-
-function guardarDatos(lista) {
-    let data = JSON.parse(localStorage.getItem(clave)) || {};
-    data[hoyClave()] = lista;
-    localStorage.setItem(clave, JSON.stringify(data));
-}
-
-function guardar() {
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const corte = document.getElementById("corte").value;
-    const peso = document.getElementById("peso").value;
-
-    if (!nombre || !apellido || !corte || !peso) {
-        alert("Completar todos los campos");
-        return;
-    }
-
-    const ahora = new Date();
-
-    const registro = {
-        fecha: ahora.toLocaleDateString(),
-        hora: ahora.toLocaleTimeString(),
-        nombre,
-        apellido,
-        corte,
-        peso
-    };
-
-    const datos = obtenerDatos();
-    datos.push(registro);
-    guardarDatos(datos);
-
-    render();
-
-    document.getElementById("nombre").value = "";
-    document.getElementById("apellido").value = "";
-    document.getElementById("corte").value = "";
-    document.getElementById("peso").value = "";
-}
-
-function render() {
-    const datos = obtenerDatos();
-    const tabla = document.getElementById("tabla");
-    tabla.innerHTML = "";
-
-    datos.forEach(d => {
-        tabla.innerHTML += `
-        <tr>
-            <td>${d.fecha}</td>
-            <td>${d.hora}</td>
-            <td>${d.nombre}</td>
-            <td>${d.apellido}</td>
-            <td>${d.corte}</td>
-            <td>${d.peso}</td>
-        </tr>
-        `;
-    });
-}
-
-function exportarExcel() {
-    const datos = obtenerDatos();
-
-    if (datos.length === 0) {
-        alert("No hay datos para exportar");
-        return;
-    }
-
-    let contenido = `
-    <table border="1">
-    <tr>
+<div class="tabla-wrap">
+  <div class="tabla-header">
+    <span>Registros del día</span>
+    <span id="contador">0</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
         <th>Fecha</th>
         <th>Hora</th>
         <th>Nombre</th>
         <th>Apellido</th>
         <th>Corte</th>
-        <th>Peso</th>
-    </tr>
-    `;
+        <th>Peso (kg)</th>
+      </tr>
+    </thead>
+    <tbody id="tabla"></tbody>
+  </table>
+</div>
 
-    datos.forEach(d => {
-        contenido += `
+<script>
+  const CLAVE = "registrosCarnes_v2";
+
+  function hoyClave() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function obtenerDatos() {
+    const data = JSON.parse(localStorage.getItem(CLAVE)) || {};
+    return data[hoyClave()] || [];
+  }
+
+  function guardarDatos(lista) {
+    let data = JSON.parse(localStorage.getItem(CLAVE)) || {};
+    data[hoyClave()] = lista;
+    localStorage.setItem(CLAVE, JSON.stringify(data));
+  }
+
+  function guardar() {
+    const nombre   = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const corte    = document.getElementById("corte").value.trim();
+    const peso     = document.getElementById("peso").value.trim();
+
+    if (!nombre || !apellido || !corte || !peso) {
+      alert("Por favor completá todos los campos.");
+      return;
+    }
+
+    const ahora = new Date();
+    const registro = {
+      fecha: ahora.toLocaleDateString("es-AR"),
+      hora: ahora.toLocaleTimeString("es-AR"),
+      nombre, apellido, corte, peso
+    };
+
+    const datos = obtenerDatos();
+    datos.push(registro);
+    guardarDatos(datos);
+    render();
+
+    ["nombre","apellido","corte","peso"].forEach(id => document.getElementById(id).value = "");
+    document.getElementById("nombre").focus();
+  }
+
+  function render() {
+    const datos = obtenerDatos();
+    const tbody = document.getElementById("tabla");
+    const contador = document.getElementById("contador");
+
+    contador.textContent = datos.length;
+
+    if (datos.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" id="vacio">Sin registros por hoy. Ingresá el primero arriba.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = datos.map(d => `
+      <tr>
+        <td>${d.fecha}</td>
+        <td>${d.hora}</td>
+        <td>${d.nombre}</td>
+        <td>${d.apellido}</td>
+        <td>${d.corte}</td>
+        <td>${d.peso}</td>
+      </tr>
+    `).join("");
+  }
+
+  function generarExcel() {
+    const datos = obtenerDatos();
+
+    if (datos.length === 0) {
+      alert("No hay datos para exportar.");
+      return null;
+    }
+
+    // Genera HTML compatible con Excel (.xls)
+    let filas = datos.map(d => `
+      <tr>
+        <td>${d.fecha}</td>
+        <td>${d.hora}</td>
+        <td>${d.nombre}</td>
+        <td>${d.apellido}</td>
+        <td>${d.corte}</td>
+        <td>${d.peso}</td>
+      </tr>
+    `).join("");
+
+    const html = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+      <head><meta charset="UTF-8">
+      <style>
+        th { background-color: #c0392b; color: white; font-weight: bold; }
+        td, th { border: 1px solid #ccc; padding: 6px 10px; }
+        table { border-collapse: collapse; }
+      </style>
+
+```
+  </head>
+  <body>
+    <table>
+      <thead>
         <tr>
-            <td>${d.fecha}</td>
-            <td>${d.hora}</td>
-            <td>${d.nombre}</td>
-            <td>${d.apellido}</td>
-            <td>${d.corte}</td>
-            <td>${d.peso}</td>
+          <th>Fecha</th><th>Hora</th><th>Nombre</th>
+          <th>Apellido</th><th>Corte</th><th>Peso (kg)</th>
         </tr>
-        `;
-    });
+      </thead>
+      <tbody>${filas}</tbody>
+    </table>
+  </body></html>
+`;
 
-    contenido += "</table>";
+return { html, nombre: `registros_carnes_${hoyClave()}.xls` };
+```
 
-    const blob = new Blob([contenido], { type: "application/vnd.ms-excel" });
-    const url = URL.createObjectURL(blob);
+}
 
-    const a = document.createElement("a");
-    const fecha = hoyClave();
+function descargarBlob(html, nombreArchivo) {
+const blob = new Blob([html], { type: “application/vnd.ms-excel;charset=utf-8;” });
+const url  = URL.createObjectURL(blob);
+const a    = document.createElement(“a”);
+a.href     = url;
+a.download = nombreArchivo;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
 
-    a.href = url;
-    a.download = `registros_${fecha}.xls`;
-    a.click();
+function exportarExcel() {
+const resultado = generarExcel();
+if (!resultado) return;
+descargarBlob(resultado.html, resultado.nombre);
 }
 
 function enviarMail() {
-    const fecha = new Date().toLocaleDateString();
+const datos = obtenerDatos();
 
-    const asunto = `Entregas de carne día: ${fecha}`;
-    const cuerpo = "Se adjunta el archivo Excel con los registros del día.";
+```
+if (datos.length === 0) {
+  alert("No hay registros del día para enviar.");
+  return;
+}
 
-    // Abre cliente de mail (NO puede adjuntar automáticamente)
-    window.location.href = `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+// 1. Descargar el Excel automáticamente
+const resultado = generarExcel();
+descargarBlob(resultado.html, resultado.nombre);
+
+// 2. Mostrar aviso al usuario
+const aviso = document.getElementById("aviso-mail");
+aviso.style.display = "block";
+setTimeout(() => { aviso.style.display = "none"; }, 12000);
+
+// 3. Abrir cliente de correo con asunto y cuerpo prellenados
+const fecha   = new Date().toLocaleDateString("es-AR");
+const asunto  = `Entregas de carne - ${fecha}`;
+const cuerpo  =
+  `Buen día,\n\nSe adjunta el archivo Excel con los registros de entregas de carne del día ${fecha}.\n\nTotal de registros: ${datos.length}\n\nSaludos.`;
+
+// Delay breve para que el navegador procese la descarga primero
+setTimeout(() => {
+  window.location.href = `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+}, 500);
+```
+
 }
 
 function borrar() {
-    if (!confirm("¿Seguro que querés borrar los registros de hoy?")) return;
-
-    let data = JSON.parse(localStorage.getItem(clave)) || {};
-    delete data[hoyClave()];
-    localStorage.setItem(clave, JSON.stringify(data));
-
-    render();
+if (!confirm(”¿Seguro que querés borrar todos los registros de hoy?”)) return;
+let data = JSON.parse(localStorage.getItem(CLAVE)) || {};
+delete data[hoyClave()];
+localStorage.setItem(CLAVE, JSON.stringify(data));
+render();
 }
 
-render();
+// Enter para guardar
+document.addEventListener(“keydown”, e => {
+if (e.key === “Enter”) guardar();
+});
 
+render();
 </script>
 
 </body>
