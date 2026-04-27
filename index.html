@@ -31,7 +31,7 @@ th,td{padding:8px;border-bottom:1px solid #ddd;}
 <br>
 
 <button class="guardar" onclick="guardar()">Guardar</button>
-<button class="excel" onclick="descargarExcel()">Descargar Excel</button>
+<button class="excel" onclick="descargarCSV()">Descargar Excel</button>
 <button class="mail" onclick="prepararMail()">Compartir por Mail</button>
 <button class="borrar" onclick="borrar()">Borrar</button>
 </div>
@@ -68,7 +68,7 @@ function setDB(db){
   localStorage.setItem("carnes_db", JSON.stringify(db));
 }
 
-// ===== OBTENER / CREAR DIA =====
+// ===== DIA =====
 function obtenerDia(db){
   let f = hoy();
   let dia = db.find(d => d.fecha === f);
@@ -78,7 +78,6 @@ function obtenerDia(db){
     db.push(dia);
   }
 
-  // mantener últimos 5 días
   if(db.length > 5){
     db.splice(0, db.length - 5);
   }
@@ -88,10 +87,10 @@ function obtenerDia(db){
 
 // ===== GUARDAR =====
 function guardar(){
-  let n = document.getElementById("nombre").value.trim();
-  let a = document.getElementById("apellido").value.trim();
-  let c = document.getElementById("corte").value.trim();
-  let p = parseFloat(document.getElementById("peso").value);
+  let n = nombre.value.trim();
+  let a = apellido.value.trim();
+  let c = corte.value.trim();
+  let p = parseFloat(peso.value);
 
   if(!n || !a || !c || isNaN(p) || p <= 0){
     alert("Completá bien los campos");
@@ -118,17 +117,16 @@ function guardar(){
 
 // ===== LIMPIAR =====
 function limpiar(){
-  document.getElementById("nombre").value="";
-  document.getElementById("apellido").value="";
-  document.getElementById("corte").value="";
-  document.getElementById("peso").value="";
+  nombre.value="";
+  apellido.value="";
+  corte.value="";
+  peso.value="";
 }
 
-// ===== TABLA =====
+// ===== RENDER =====
 function render(){
   let db = getDB();
-  let f = hoy();
-  let dia = db.find(d => d.fecha === f);
+  let dia = db.find(d => d.fecha === hoy());
 
   let html="";
 
@@ -148,59 +146,40 @@ function render(){
     html = "<tr><td colspan='7'>Sin registros</td></tr>";
   }
 
-  document.getElementById("tabla").innerHTML = html;
+  tabla.innerHTML = html;
 }
 
-// ===== EXCEL =====
-function generarExcel(){
+// ===== CSV REAL =====
+function generarCSV(){
   let db = getDB();
-  let f = hoy();
-  let dia = db.find(d => d.fecha === f);
+  let dia = db.find(d => d.fecha === hoy());
 
   if(!dia || dia.registros.length === 0){
     alert("Sin datos");
     return null;
   }
 
-  let filas = "";
+  let csv = "N°,Fecha,Hora,Nombre,Apellido,Corte,Peso\n";
+
   dia.registros.forEach((r,i)=>{
-    filas += `<tr>
-      <td>${i+1}</td>
-      <td>${r.fecha}</td>
-      <td>${r.hora}</td>
-      <td>${r.nombre}</td>
-      <td>${r.apellido}</td>
-      <td>${r.corte}</td>
-      <td>${r.peso}</td>
-    </tr>`;
+    csv += `${i+1},"${r.fecha}","${r.hora}","${r.nombre}","${r.apellido}","${r.corte}",${r.peso}\n`;
   });
 
-  return `
-  <html>
-  <head><meta charset="UTF-8"></head>
-  <body>
-  <table border="1">
-  <tr>
-  <th>#</th><th>Fecha</th><th>Hora</th>
-  <th>Nombre</th><th>Apellido</th><th>Corte</th><th>Peso</th>
-  </tr>
-  ${filas}
-  </table>
-  </body>
-  </html>`;
+  return csv;
 }
 
 // ===== DESCARGAR =====
-function descargarExcel(){
-  let html = generarExcel();
-  if(!html) return;
+function descargarCSV(){
+  let csv = generarCSV();
+  if(!csv) return;
 
-  let blob = new Blob([html], {type:'application/vnd.ms-excel'});
+  let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+
   let url = URL.createObjectURL(blob);
 
   let a = document.createElement("a");
   a.href = url;
-  a.download = "registro_carnes.xls";
+  a.download = "registro_carnes.csv";
   a.click();
 
   URL.revokeObjectURL(url);
@@ -208,15 +187,15 @@ function descargarExcel(){
 
 // ===== MAIL =====
 function prepararMail(){
-  let html = generarExcel();
-  if(!html) return;
+  let csv = generarCSV();
+  if(!csv) return;
 
-  descargarExcel();
+  descargarCSV();
 
-  alert("El archivo se descargó.\nAhora adjuntalo manualmente en tu mail.");
+  alert("El archivo se descargó.\nAdjuntalo manualmente en tu mail.");
 
-  let asunto = "Registro Carnes del día";
-  let cuerpo = "Adjunto el Excel generado.";
+  let asunto = "Registro Carnes";
+  let cuerpo = "Adjunto archivo CSV del día.";
 
   window.location.href =
     `mailto:?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
@@ -227,10 +206,9 @@ function borrar(){
   if(!confirm("¿Borrar datos de hoy?")) return;
 
   let db = getDB();
-  let f = hoy();
 
   db = db.map(d=>{
-    if(d.fecha === f){
+    if(d.fecha === hoy()){
       d.registros = [];
     }
     return d;
